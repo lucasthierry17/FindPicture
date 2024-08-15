@@ -32,6 +32,6 @@ Results:
 Picture 3
 
 Here you can see the results for giving 5 images into the software, using the embeddings approach: 
-Pciture 4
+Picture 4
 
 
