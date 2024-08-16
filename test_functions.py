@@ -3,14 +3,9 @@ import pytest
 import pickle
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+from runtime_embedding_resnet import load_embeddings_and_paths
 
-# Load embeddings and image paths from pickle files
-def load_embeddings_and_paths(embeddings_path, image_paths_path):
-    with open(embeddings_path, 'rb') as f:
-        embeddings = pickle.load(f)
-    with open(image_paths_path, 'rb') as f:
-        image_paths = pickle.load(f)
-    return embeddings, image_paths
+
 # Define the test function for pytest
 def test_image_similarity():
     embeddings_path = 'embeddings.pkl'
@@ -43,7 +38,3 @@ def test_image_similarity():
     assert 0 <= similarity_between_two_images <= 1, "Similarity between the two images is out of bounds."
 
     # If everything passes, pytest will not show any output by default
-
-
-
-
