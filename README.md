@@ -34,6 +34,13 @@ Results:
 Picture 3
 
 Here you can see the results for giving 5 images into the software, using the embeddings approach: 
-Picture 4
+These are the five input images...
+![image](https://github.com/user-attachments/assets/e64b2b76-5410-4b54-8af3-ec43f1fb2e18)
 
+And these are the five output images...
+![image](https://github.com/user-attachments/assets/a71de536-5152-46fe-acc1-ef0242531f24)
+
+### 2D-Plot of the pictures
+The following picture shows the position of the images in x and y coordinates. Similar images are close to each other, meanwhile different images have a further images.
+![image](https://github.com/user-attachments/assets/c7f13eeb-2279-4adc-8191-4f5ebdab5fa4)
 
