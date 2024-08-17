@@ -38,3 +38,50 @@ def test_image_similarity():
     assert 0 <= similarity_between_two_images <= 1, "Similarity between the two images is out of bounds."
 
     # If everything passes, pytest will not show any output by default
+
+    
+import unittest
+import numpy as np
+from sklearn.neighbors import NearestNeighbors
+
+# Assuming calculate_histogram and find_similar_image functions are already defined
+
+class TestFindSimilarImage(unittest.TestCase):
+
+    def setUp(self):
+        # Sample image and histograms for testing
+        self.input_image = np.random.randint(0, 256, (100, 100, 3), dtype=np.uint8)
+        
+        # Mock histograms dictionary
+        self.histograms = {
+            "image1.jpg": np.random.rand(256, 256),
+            "image2.jpg": np.random.rand(256, 256),
+            "image3.jpg": np.random.rand(256, 256)
+        }
+
+        # Mock calculate_histogram function
+        def mock_calculate_histogram(image, color_space):
+            return np.random.rand(256, 256)
+
+        # Replace the real calculate_histogram function with the mock
+        global calculate_histogram
+        calculate_histogram = mock_calculate_histogram
+
+    def test_find_similar_image_single_neighbor(self):
+        # Test with default single neighbor
+        result = find_similar_image(self.input_image, self.histograms, n_neighbors=1)
+        self.assertEqual(len(result), 1)
+        self.assertIn(result[0][0], self.histograms.keys())
+        self.assertIsInstance(result[0][1], float)
+
+    def test_find_similar_image_multiple_neighbors(self):
+        # Test with multiple neighbors
+        n_neighbors = 2
+        result = find_similar_image(self.input_image, self.histograms, n_neighbors=n_neighbors)
+        self.assertEqual(len(result), n_neighbors)
+        for r in result:
+            self.assertIn(r[0], self.histograms.keys())
+            self.assertIsInstance(r[1], float)
+
+if __name__ == '__main__':
+    unittest.main()
