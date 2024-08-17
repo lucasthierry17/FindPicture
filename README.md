@@ -20,11 +20,11 @@ You can find this approach in the Link_to_file
 Results: 
 ![image](https://github.com/user-attachments/assets/14bd857a-4352-4ccf-b5e7-9d861ee4513b)
 
-As you can see, we get 5 relatively similar images back for our input picture. The lower the similarity score is, the more related are two pictures. This is why Image 1 with a similarity score of xyz is considered the closest image. 
+As you can see, we get 5 relatively similar images back for our input picture. The lower the similarity score is, the more related are two pictures. This is why Image 1 with a similarity score of 0.44 is considered the closest image. 
 
 ### Method 2: Embeddings
 The second approach is based on embeddings. You can find this approach here: Link_to_file
-Results: the following image shows the input picutre next to the 5 most similar images. This time a hihgher similarity score means that images are closer related to another. This is why Image 1 has the highest similarity with a score of xyz.
+Results: the following image shows the input picutre next to the 5 most similar images. This time a hihgher similarity score means that images are closer related to another. This is why Image 1 has the highest similarity with a score of 0.88.
 ![image](https://github.com/user-attachments/assets/d62584cc-d783-4d8d-90fb-0943c7eb4b86)
 
 
