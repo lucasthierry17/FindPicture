@@ -31,7 +31,7 @@ Results: the following image shows the input picutre next to the 5 most similar 
 ### Method 3: Combination of color histogramms and embeddings
 Our third approach is based on a combination of the color histogramms and the embedding. 
 Results: 
-Picture 3
+
 
 Here you can see the results for giving 5 images into the software, using the embeddings approach: 
 These are the five input images...
@@ -42,5 +42,6 @@ And these are the five output images...
 
 ### 2D-Plot of the pictures
 The following picture shows the position of the images in x and y coordinates. Similar images are close to each other, meanwhile different images have a further images.
+As you see, there are some folders, which have quite a lot of similar images, which results in a rather compressed area in the visualisation.
 ![image](https://github.com/user-attachments/assets/c7f13eeb-2279-4adc-8191-4f5ebdab5fa4)
 
