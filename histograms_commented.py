@@ -22,9 +22,9 @@
 
 # Let's take a look at the histograms
 
-# In[4]:
+# In[1]:
 
-
+"""
 import cv2
 import matplotlib.pyplot as plt
 
@@ -53,10 +53,8 @@ if image is not None:
         plt.grid(True)  # Add grid for better visualization
 
     plt.tight_layout()
-    plt.show()
-
-else:
-    print("Failed to load the image. Please check the file path.")
+    #plt.show()
+"""
 
 
 # As expected, a very large proportion of the pixels in the image have a blue value of 0, while the green values tend to dominate within the image. 
@@ -83,7 +81,7 @@ else:
 
 # Let's first start the coding part. For this Notebook we need the following Imports
 
-# In[1]:
+# In[2]:
 
 
 # necessary imports
@@ -97,6 +95,7 @@ import matplotlib.pyplot as plt
 from concurrent.futures import ThreadPoolExecutor
 from sklearn.neighbors import NearestNeighbors
 import joblib
+import functions
 from sklearn.neighbors import NearestNeighbors
 
 
@@ -113,7 +112,7 @@ icms = ImageCms
 # - Storage Path
 # - Pixel size
 
-# In[2]:
+# In[3]:
 
 
 # Connect to an existing one to store image metadata
@@ -129,7 +128,7 @@ conn.commit()
 # ## Storing the storage path of every image in a variable
 # This helps us to find and plot the similar images later in the code.
 
-# In[3]:
+# In[4]:
 
 
 # Fetch image paths from the database to work with the image files
@@ -143,8 +142,7 @@ paths_tuples = c.fetchall()  # This will be a list of tuples
 database_image_paths = [path[0] for path in paths_tuples]  # Extract the first element of each tuple
 
 # Verify the paths
-for path in database_image_paths[:10]:  # Print the first 10 paths for verification
-    print(path)
+
 
 
 # ## Now to the solution
@@ -204,7 +202,7 @@ for path in database_image_paths[:10]:  # Print the first 10 paths for verificat
 # Let's have a look at the other functions.
 # 
 
-# In[14]:
+# In[5]:
 
 
 # Calculate the histogram of an image using OpenCV
@@ -330,7 +328,7 @@ def compute_and_store_histograms(database_image_paths, save_path, save_interval=
 
             # Save intermediate results
             joblib.dump(histograms, save_path)
-            print(f"Saved {len(histograms)} histograms to {save_path}")
+            #print(f"Saved {len(histograms)} histograms to {save_path}")
 
 
 
@@ -385,51 +383,13 @@ def find_similar_image(input_image, histograms, n_neighbors=1):
 
 
 
-
-def display_images(input_image_path, similar_images):
-    """
-    This function visually displays the input image alongside its most similar images found in the database.
-
-    Input: 
-    - input_image_path: A string representing the file path of the input image.
-    - similar_images: A list of tuples, where each tuple contains an image path and the corresponding similarity distance.
-
-    Output: 
-    - The function does not return anything. It displays the images in a Matplotlib figure.
-
-    The input image is loaded and converted from BGR to RGB color space.
-    A plot is created with the input image on the left and the similar images on the right. Each similar image is labeled with its similarity distance.
-    The function uses Matplotlib to display the images in a grid layout.
-    
-    """
-    input_image = cv2.imread(input_image_path)
-    input_image_rgb = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
-    
-    plt.figure(figsize=(20, 5))
-    
-    # Plot input image
-    plt.subplot(1, 6, 1)
-    plt.imshow(input_image_rgb)
-    plt.title('Input Image')
-    plt.axis('off')
-    
-    # Plot similar images
-    for i, (image_path, distance) in enumerate(similar_images, start=2):
-        similar_image = cv2.imread(image_path)
-        similar_image_rgb = cv2.cvtColor(similar_image, cv2.COLOR_BGR2RGB)
-        plt.subplot(1, 6, i)
-        plt.imshow(similar_image_rgb)
-        plt.title(f'Similar {i-1}\nDist: {distance:.2f}')
-        plt.axis('off')
-    
-    plt.show()
  # List of paths to database images
 database_histogram_file = "histograms_all_images_0608.pkl"
 
 
 # # Loading the histogram file and test the results
 
-# In[5]:
+# In[6]:
 
 
 histograms = load_histograms_from_file(database_histogram_file)
@@ -441,14 +401,106 @@ histograms = load_histograms_from_file(database_histogram_file)
 # 
 # ![alt text](output_example-1.png)
 
-# In[7]:
+# In[8]:
 
 
-input_image_path = "put an image here"
+input_image_path = "images/1835.jpg"
 input_image = cv2.imread(input_image_path)
 similar_images = find_similar_image(cv2.imread(input_image_path), histograms, n_neighbors=5)
 # Request top 3 similar images
-display_images(input_image_path, similar_images)
+#functions.display_images(input_image_path, similar_images)
+
+
+# ## Finding Similar Images with 5 Input Images
+
+# Now, we implemented a system to find images that are most similar to a given set of input images based on their color histograms and embeddings. The process involves three main steps: 
+# - calculating average histograms, 
+# - finding the most similar images based on these histograms, 
+# - and displaying the images for visualization. 
+
+# We first compute an average histogram that encapsulates the color characteristics of a set of input images. It then searches through a precomputed set of histograms for the entire dataset to find images that have similar color distributions to the input images. The top results are returned as the most similar images. Finally, these similar images are displayed for the user to review. 
+
+# In[9]:
+
+
+def average_histograms(input_image_paths, color_space="HSV"):
+
+    """
+    This function calculates the average histogram of a list of input images.
+
+    Input:
+    - input_image_paths: A list of file paths to the input images.
+    - color_space: The color space in which the histogram is calculated (default is "HSV").
+
+    Output:
+    - mean_histogram: A NumPy array representing the average histogram of the input images.
+    """
+
+    histograms = [calculate_histogram(cv2.imread(img_path), color_space) for img_path in input_image_paths]
+    mean_histogram = np.mean(histograms, axis=0)
+    return mean_histogram
+
+
+def find_most_similar_to_average(input_image_paths, histograms, all_image_paths, top_n=5, color_space="HSV"):
+
+    """
+    This function finds the top N images in the dataset that are most similar to the average histogram
+    of a given set of input images.
+
+    Input:
+    - input_image_paths: A list of file paths to the input images.
+    - histograms: A dictionary where keys are image paths and values are their corresponding histograms.
+    - all_image_paths: A list of paths to all images in the dataset.
+    - top_n: Number of top similar images to return (default is 5).
+    - color_space: The color space in which the histogram is calculated (default is "HSV").
+
+    Output:
+    - similar_images: A list of tuples, where each tuple contains the path of a similar image 
+      and its corresponding distance to the average histogram. The list is ordered by similarity, 
+      with the most similar image first.
+    """
+
+    mean_histogram = average_histograms(input_image_paths, color_space)
+    
+    # Prepare data for nearest neighbors search
+    hist_data = np.array(list(histograms.values()))
+    
+    # Use KDTree or BallTree for efficient similarity search
+    nbrs = NearestNeighbors(n_neighbors=top_n, algorithm='auto', metric='euclidean').fit(hist_data)
+    distances, indices = nbrs.kneighbors([mean_histogram])
+    
+    # Retrieve the most similar images
+    similar_images = [(all_image_paths[idx], distances[0][i]) for i, idx in enumerate(indices[0])]
+    return similar_images
+
+
+# In[10]:
+
+
+input_image_paths = [
+    "D:/data/image_data/Landscapes/00000004_(7).jpg",
+    "D:/data/image_data/Landscapes/00000026.jpg",
+    "D:/data/image_data/Landscapes/00000001.jpg",
+    "D:/data/image_data/Landscapes/00000052.jpg",
+    "D:/data/image_data/Landscapes/00000062_(6).jpg"
+]
+
+
+# Extract the first element of each tuple to get the actual file paths
+
+
+similar_images = find_most_similar_to_average(input_image_paths, histograms, database_image_paths, top_n=5)
+
+top_5_paths_from_5_images = [img_path for img_path, _ in similar_images]
+
+#print(similar_images)
+#print(top_5_paths_from_5_images)
+
+#print("Input Images:")
+#functions.display_images_from_paths(input_image_paths)
+
+#print("Top 5 Similar Images:")
+#functions.display_images_from_paths(top_5_paths_from_5_images)
 
 
 # In[ ]:
