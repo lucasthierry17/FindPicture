@@ -52,8 +52,9 @@ def traverse_folders(root_folder):
                     image = Image.open(file_path)
                     yield (file, file_path, file_size), i / total_files * 100
                 except Exception as e:
+                    pass
                     # Catch any other exceptions and log if needed
-                    print(f"Unexpected error with file {file_path}: {e}")
+                    # print(f"Unexpected error with file {file_path}: {e}")
             else:
                 pass
 
@@ -67,5 +68,5 @@ def insert_into_database(database_name, data):
 for data, progress in tqdm(traverse_folders(root_folder), total=500000, desc="Processing images", unit="%"):
     insert_into_database(database_name, data)
 
-print("Database creation and data insertion completed.")
+# print("Database creation and data insertion completed.")
 
